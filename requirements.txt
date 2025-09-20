@@ -1,0 +1,10 @@
+feedparser
+requests
+beautifulsoup4
+pandas
+pydantic
+python-dotenv
+rapidfuzz
+jinja2
+tenacity
+html2text

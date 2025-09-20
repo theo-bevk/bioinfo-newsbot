@@ -1,0 +1,101 @@
+timezone: "Europe/Amsterdam"
+max_items_per_source: 30
+
+digest:
+  top_n: 20
+  max_per_topic: 5
+  summarize: true
+  target_read_time_minutes: 8
+
+sources:
+
+  - name: "bioRxiv - Bioinformatics"
+    type: "rss"
+    url: "https://www.biorxiv.org/collection/bioinformatics/rss.xml"
+    tags: ["preprint","bioinformatics"]
+
+    - name: "arXiv — bioinformatics-wide"
+    type: "api_arxiv"
+    query: >
+      (cat:q-bio OR cat:cs.CB OR cat:stat.ML)
+      AND
+      (
+        ti:genomics OR ti:"genome assembly" OR ti:annotation OR ti:"variant calling" OR ti:GWAS OR ti:phylogen* OR ti:pangenome OR ti:"graph genome" OR ti:"structural variant" OR ti:alignment OR ti:mapping OR ti:deconvolution OR ti:"single cell" OR ti:spatial OR ti:transcriptomics OR ti:"RNA-seq" OR ti:"bulk RNA" OR ti:"scRNA-seq" OR ti:"scATAC-seq" OR ti:"multi-omics" OR ti:epigenomics OR ti:"ATAC-seq" OR ti:"ChIP-seq" OR ti:methyl* OR ti:proteomics OR ti:metabolomics OR ti:metagenom* OR ti:microbiome OR ti:binning OR ti:"taxonomic classification" OR ti:phylogenomics OR ti:systems OR ti:"network biology" OR ti:pathway OR ti:CRISPR OR ti:"functional genomics" OR ti:"computational oncology" OR ti:"immuno-informatics" OR ti:"protein structure" OR ti:"structure prediction" OR ti:docking OR ti:"molecular dynamics" OR ti:"drug discovery" OR ti:"machine learning" OR ti:"deep learning" OR ti:"representation learning" OR ti:"graph neural" OR ti:"foundation model" OR ti:"large language model" OR ti:"workflow" OR ti:pipeline OR ti:Nextflow OR ti:Snakemake OR ti:FAIR OR ti:reproducibility
+        OR
+        abs:genomics OR abs:"genome assembly" OR abs:annotation OR abs:"variant calling" OR abs:GWAS OR abs:phylogen* OR abs:pangenome OR abs:"graph genome" OR abs:"structural variant" OR abs:alignment OR abs:mapping OR abs:deconvolution OR abs:"single cell" OR abs:spatial OR abs:transcriptomics OR abs:"RNA-seq" OR abs:"scRNA-seq" OR abs:"scATAC-seq" OR abs:"multi-omics" OR abs:epigenomics OR abs:"ATAC-seq" OR abs:"ChIP-seq" OR abs:methyl* OR abs:proteomics OR abs:metabolomics OR abs:metagenom* OR abs:microbiome OR abs:binning OR abs:"taxonomic classification" OR abs:phylogenomics OR abs:systems OR abs:"network biology" OR abs:pathway OR abs:CRISPR OR abs:"functional genomics" OR abs:"computational oncology" OR abs:"immuno-informatics" OR abs:"protein structure" OR abs:"structure prediction" OR abs:docking OR abs:"molecular dynamics" OR abs:"drug discovery" OR abs:"machine learning" OR abs:"deep learning" OR abs:"representation learning" OR abs:"graph neural" OR abs:"foundation model" OR abs:"large language model" OR abs:"workflow" OR abs:pipeline OR abs:Nextflow OR abs:Snakemake OR abs:FAIR OR abs:reproducibility
+      )
+    max_results: 150
+    tags: ["preprint"]
+
+  - name: "Europe PMC — bioinformatics-wide (last 7 days)"
+    type: "api_eupmc"
+    query: >
+      (
+        TITLE:(genomics OR "genome assembly" OR annotation OR "variant calling" OR GWAS OR phylogen* OR pangenome OR "graph genome" OR "structural variant" OR alignment OR mapping OR deconvolution OR "single cell" OR spatial OR transcriptomics OR "RNA-seq" OR scRNA-seq OR scATAC-seq OR "multi-omics" OR epigenomics OR "ATAC-seq" OR "ChIP-seq" OR methyl* OR proteomics OR metabolomics OR metagenom* OR microbiome OR binning OR "taxonomic classification" OR phylogenomics OR systems OR "network biology" OR pathway OR CRISPR OR "functional genomics" OR "computational oncology" OR "immuno-informatics" OR "protein structure" OR "structure prediction" OR docking OR "molecular dynamics" OR "drug discovery" OR "machine learning" OR "deep learning" OR "representation learning" OR "graph neural" OR "foundation model" OR "large language model" OR workflow OR pipeline OR Nextflow OR Snakemake OR FAIR OR reproducibility)
+        OR
+        ABSTRACT:(genomics OR "genome assembly" OR annotation OR "variant calling" OR GWAS OR phylogen* OR pangenome OR "graph genome" OR "structural variant" OR alignment OR mapping OR deconvolution OR "single cell" OR spatial OR transcriptomics OR "RNA-seq" OR scRNA-seq OR scATAC-seq OR "multi-omics" OR epigenomics OR "ATAC-seq" OR "ChIP-seq" OR methyl* OR proteomics OR metabolomics OR metagenom* OR microbiome OR binning OR "taxonomic classification" OR phylogenomics OR systems OR "network biology" OR pathway OR CRISPR OR "functional genomics" OR "computational oncology" OR "immuno-informatics" OR "protein structure" OR "structure prediction" OR docking OR "molecular dynamics" OR "drug discovery" OR "machine learning" OR "deep learning" OR "representation learning" OR "graph neural" OR "foundation model" OR "large language model" OR workflow OR pipeline OR Nextflow OR Snakemake OR FAIR OR reproducibility)
+      )
+      AND FIRST_PDATE:[NOW-7DAYS TO NOW]
+    max_results: 150
+    tags: ["papers"]
+
+  - name: "Nature Bioinformatics (subject feed)"
+    type: "rss"
+    url: "https://www.nature.com/subjects/bioinformatics.rss"
+    tags: ["news","journal"]
+
+  - name: "Genome Biology"
+    type: "rss"
+    url: "https://genomebiology.biomedcentral.com/articles/rss.xml"
+    tags: ["journal","genomics"]
+
+  - name: "GigaScience"
+    type: "rss"
+    url: "https://academic.oup.com/rss/site_6094/4009.xml"
+    tags: ["journal","bigdata"]
+
+  - name: "PLOS Computational Biology"
+    type: "rss"
+    url: "https://journals.plos.org/ploscompbiol/feed/atom"
+    tags: ["journal","compbio"]
+
+  - name: "EMBL-EBI News"
+    type: "rss"
+    url: "https://www.ebi.ac.uk/about/news/feed"
+    tags: ["institute","ebi"]
+
+  - name: "NCBI Insights Blog"
+    type: "rss"
+    url: "https://ncbiinsights.ncbi.nlm.nih.gov/feed/"
+    tags: ["institute","ncbi","blog"]
+
+  - name: "Biostars hot"
+    type: "rss"
+    url: "https://www.biostars.org/feeds/all/"
+    tags: ["community","Q&A"]
+
+  - name: "Bioconductor blog aggregator"
+    type: "rss"
+    url: "https://www.bioconductor.org/help/rss.xml"
+    tags: ["community","R","bioconductor"]
+
+  - name: "Nextflow blog"
+    type: "rss"
+    url: "https://www.nextflow.io/blog/index.xml"
+    tags: ["workflow","nextflow"]
+
+  - name: "Snakemake blog"
+    type: "rss"
+    url: "https://snakemake.github.io/feed.xml"
+    tags: ["workflow","snakemake"]
+
+  - name: "Bioconda updates"
+    type: "rss"
+    url: "https://github.com/bioconda/bioconda-recipes/releases.atom"
+    tags: ["tools","bioconda"]
+
+  - name: "Biocontainers updates"
+    type: "rss"
+    url: "https://github.com/BioContainers/containers/releases.atom"
+    tags: ["tools","containers"]
+

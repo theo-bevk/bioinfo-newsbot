@@ -1,0 +1,9 @@
+<h2>Bioinformatics Daily — {{ date_human }}</h2>
+{% for it in items %}
+  <div style="margin-bottom:14px">
+    <div><a href="{{ it.url }}"><strong>{{ it.title }}</strong></a>
+      <span> — {{ it.source }} • {{ it.published_at[:10] }}</span>
+    </div>
+    {% if it.summary %}<div>{{ it.summary }}</div>{% endif %}
+  </div>
+{% endfor %}
