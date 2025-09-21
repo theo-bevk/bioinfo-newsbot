@@ -1,0 +1,13 @@
+# Secrets
+.env
+src/.env
+
+# Local state/data
+data/
+*.sqlite
+
+# IDE/editor
+.idea/
+.vscode/
+__pycache__/
+*.pyc
