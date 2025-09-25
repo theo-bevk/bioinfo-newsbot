@@ -8,13 +8,12 @@ digest:
   target_read_time_minutes: 8
 
 sources:
-
   - name: "bioRxiv - Bioinformatics"
     type: "rss"
     url: "https://www.biorxiv.org/collection/bioinformatics/rss.xml"
     tags: ["preprint","bioinformatics"]
 
-    - name: "arXiv — bioinformatics-wide"
+  - name: "arXiv — bioinformatics-wide"
     type: "api_arxiv"
     query: >
       (cat:q-bio OR cat:cs.CB OR cat:stat.ML)
@@ -98,4 +97,3 @@ sources:
     type: "rss"
     url: "https://github.com/BioContainers/containers/releases.atom"
     tags: ["tools","containers"]
-

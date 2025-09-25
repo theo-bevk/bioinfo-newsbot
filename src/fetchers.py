@@ -11,14 +11,15 @@ def _safe_hash(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8", "ignore")).hexdigest()
 
 def _coerce_date(feed_entry):
-    for key in ("published_parsed","updated_parsed"):
-        if getattr(feed_entry, key, None):
-            return dt.datetime(*feed_entry.__dict__[key][:6], tzinfo=dt.timezone.utc)
+    for key in ("published_parsed", "updated_parsed"):
+        val = getattr(feed_entry, key, None) or (feed_entry.get(key) if hasattr(feed_entry, "get") else None)
+        if val:
+            return dt.datetime(*val[:6], tzinfo=dt.timezone.utc)
     return _now_utc()
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(3))
 def fetch_rss(url: str, source_name: str, max_items: int) -> List[Dict[str, Any]]:
-    feed = feedparser.parse(url)
+    feed = feedparser.parse(url, request_headers={"user-agent": "bioinfo-newsbot/1.0"})
     items = []
     for e in feed.entries[:max_items]:
         link = getattr(e, "link", "") or ""
@@ -38,16 +39,21 @@ def fetch_rss(url: str, source_name: str, max_items: int) -> List[Dict[str, Any]
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(3))
 def fetch_arxiv(query: str, max_results: int) -> List[Dict[str, Any]]:
-    # Simple arXiv Atom API
-    url = (
-        "http://export.arxiv.org/api/query"
-        f"?search_query={query}&sortBy=submittedDate&sortOrder=descending&max_results={max_results}"
-    )
-    feed = feedparser.parse(url)
+    ARXIV_API = "http://export.arxiv.org/api/query"
+    params = {
+        "search_query": query,
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "max_results": max_results,
+    }
+    r = requests.get(ARXIV_API, params=params, timeout=30)
+    r.raise_for_status()
+    feed = feedparser.parse(r.text)
+
     items = []
     for e in feed.entries:
-        link = (e.link or "").strip()
-        title = (e.title or "").strip()
+        link = (getattr(e, "link", "") or "").strip()
+        title = (getattr(e, "title", "") or "").strip()
         summary = getattr(e, "summary", "") or ""
         date = _coerce_date(e)
         uid = _safe_hash(f"arxiv|{title}|{link}")
@@ -63,7 +69,6 @@ def fetch_arxiv(query: str, max_results: int) -> List[Dict[str, Any]]:
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(3))
 def fetch_eupmc(query: str, max_results: int) -> List[Dict[str, Any]]:
-    # Europe PMC REST API
     params = {
         "query": query,
         "pageSize": max_results,
@@ -101,5 +106,4 @@ def fetch_from_config(src: dict) -> List[Dict[str, Any]]:
         return fetch_arxiv(src["query"], src.get("max_results", 50))
     if t == "api_eupmc":
         return fetch_eupmc(src["query"], src.get("max_results", 50))
-    # Add more adapters as it grows (GitHub releases API, Notion,...)
     return []

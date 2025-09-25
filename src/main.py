@@ -1,10 +1,10 @@
 import yaml, datetime as dt
-from fetchers import fetch_from_config
-from normalize import clean_title, near_duplicate
-from rank import score_item
-from summarize import summarize_item
-from storage import get_db, filter_new, mark_seen
-from render import render_html
+from .fetchers import fetch_from_config
+from .normalize import clean_title, near_duplicate
+from .rank import score_item
+from .summarize import summarize_item
+from .storage import get_db, filter_new, mark_seen
+from .render import render_html
 
 def load_config():
     with open("config.yaml","r") as f:
@@ -36,20 +36,16 @@ def main():
     now = dt.datetime.utcnow().replace(tzinfo=dt.timezone.utc)
     ranked = sorted(new_items, key=lambda x: score_item(x, now), reverse=True)
 
-    # Summarize top N
     top = ranked[:cfg["digest"]["top_n"]]
     summarized = [summarize_item(it) for it in top]
 
     html = render_html(summarized)
 
-    # Delivery option 1: write file
     with open("data/digest.html","w",encoding="utf-8") as f:
         f.write(html)
 
-    # Delivery option 2: email (uncomment once configured)
-    # send_email(html, "Bioinformatics Daily", TO, FROM, SMTP_HOST, SMTP_PORT, USER, PASS)
+    #add other options (email, telegram...)
 
-    # Mark seen (only after successful delivery)
     mark_seen(con, top)
     print(f"Prepared {len(top)} items.")
 

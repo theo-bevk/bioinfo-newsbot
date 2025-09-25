@@ -1,4 +1,4 @@
-from openai_summary import openai_summarize
+from .openai_summary import openai_summarize
 
 openai_llm = lambda t: openai_summarize(t, model="gpt-5-nano")
 
